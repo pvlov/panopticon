@@ -1,13 +1,10 @@
 mod handler;
 
-
 use actix_cors::Cors;
 use actix_web::{middleware, web, App, HttpServer};
 
-
 #[derive(Clone, Default)]
 struct AppContext;
-
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -22,6 +19,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(app_data.clone()))
             .service(handler::health)
+            .service(handler::taxis)
     })
     .bind(("0.0.0.0", 8080))?
     .run()
