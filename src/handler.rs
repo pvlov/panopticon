@@ -3,7 +3,7 @@ use std::fmt::Display;
 use actix_web::{error::ErrorInternalServerError, get, web, HttpResponse, Responder, Result};
 use uuid::Uuid;
 
-use crate::AppContext;
+use crate::{solvers::random::RandomSolver, AppContext};
 
 #[get("/health")]
 async fn health() -> impl Responder {
@@ -25,12 +25,18 @@ async fn health() -> impl Responder {
 //     HttpResponse::Ok().finish()
 // }
 
-#[get("/api/run_scenario_by_id/{scenario_id}")]
-async fn run_scenario_by_id(
-    req_params: web::Path<Uuid>,
+#[get("/api/run_scenario/{scenario_id}/{solver}")]
+async fn run_scenario(
+    req_params: web::Path<(Uuid, String)>,
     ctx: web::Data<AppContext>,
 ) -> Result<impl Responder> {
-    let scenario_id = req_params.into_inner();
+    let (scenario_id, solver_name) = req_params.into_inner();
+
+    let solver = match solver_name.to_lowercase().as_str() {
+        "random" => RandomSolver,
+        _ => todo!(),
+    };
+
     let ctx = ctx.into_inner();
 
     let scenario = ctx
@@ -38,7 +44,6 @@ async fn run_scenario_by_id(
         .get_scenario(scenario_id)
         .await
         .map_err(ErrorInternalServerError)?;
-
 
     Ok(HttpResponse::Ok().body(format!("Scenario ID: {}", scenario_id)))
 }

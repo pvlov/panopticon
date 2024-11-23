@@ -15,15 +15,15 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StandardMagentaVehicleDto {
     #[serde(rename = "activeTime")]
-    pub active_time: Option<f32>,
+    pub active_time: Option<f64>,
     #[serde(rename = "coordX")]
-    pub coord_x: f32,
+    pub coord_x: f64,
     #[serde(rename = "coordY")]
-    pub coord_y: f32,
+    pub coord_y: f64,
     #[serde(rename = "customerId")]
     pub customer_id: Option<uuid::Uuid>,
     #[serde(rename = "distanceTravelled")]
-    pub distance_travelled: Option<f32>,
+    pub distance_travelled: Option<f64>,
     #[serde(rename = "id")]
     pub id: uuid::Uuid,
     #[serde(rename = "isAvailable")]
@@ -31,24 +31,24 @@ pub struct StandardMagentaVehicleDto {
     #[serde(rename = "numberOfTrips")]
     pub number_of_trips: Option<u32>,
     #[serde(rename = "remainingTravelTime")]
-    pub remaining_travel_time: Option<f32>,
+    pub remaining_travel_time: Option<f64>,
     #[serde(rename = "vehicleSpeed")]
-    pub vehicle_speed: Option<f32>,
+    pub vehicle_speed: Option<f64>,
 }
 
 impl StandardMagentaVehicleDto {
     /// The vehicle data transfer object
     pub fn new(
-        active_time: Option<f32>,
-        coord_x: f32,
-        coord_y: f32,
+        active_time: Option<f64>,
+        coord_x: f64,
+        coord_y: f64,
         customer_id: Option<uuid::Uuid>,
-        distance_travelled: Option<f32>,
+        distance_travelled: Option<f64>,
         id: uuid::Uuid,
         is_available: bool,
         number_of_trips: Option<u32>,
-        remaining_travel_time: Option<f32>,
-        vehicle_speed: Option<f32>,
+        remaining_travel_time: Option<f64>,
+        vehicle_speed: Option<f64>,
     ) -> StandardMagentaVehicleDto {
         StandardMagentaVehicleDto {
             active_time,

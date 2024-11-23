@@ -1309,6 +1309,7 @@ dependencies = [
  "env_logger",
  "futures",
  "log",
+ "rand",
  "reqwest",
  "scenario-runner",
  "serde",

@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use reqwest::{Client, Url};
-use scenario_runner::models::ScenarioDto;
+use scenario_runner::models::{ScenarioDto, VehicleDataDto};
 use uuid::Uuid;
 
 #[derive(Clone, Debug)]
@@ -65,6 +65,13 @@ impl ApiWrapper {
         log::trace!("Got scenario response: {}", body);
 
         Ok(serde_json::from_str(&body)?)
+    }
+
+    pub async fn get_vehicle(&self, id: Uuid) -> Result<VehicleDataDto, anyhow::Error> {
+        // /vehicles/{vehicleId}
+
+        // log::trace!("")
+        todo!()
     }
 }
 

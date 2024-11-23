@@ -17,20 +17,20 @@ pub struct CustomerDto {
     #[serde(rename = "awaitingService")]
     pub awaiting_service: bool,
     #[serde(rename = "coordX")]
-    pub coord_x: f32,
+    pub coord_x: f64,
     #[serde(rename = "coordY")]
-    pub coord_y: f32,
+    pub coord_y: f64,
     #[serde(rename = "destinationX")]
-    pub destination_x: f32,
+    pub destination_x: f64,
     #[serde(rename = "destinationY")]
-    pub destination_y: f32,
+    pub destination_y: f64,
     #[serde(rename = "id")]
     pub id: uuid::Uuid,
 }
 
 impl CustomerDto {
     /// The customer data transfer object
-    pub fn new(awaiting_service: bool, coord_x: f32, coord_y: f32, destination_x: f32, destination_y: f32, id: uuid::Uuid) -> CustomerDto {
+    pub fn new(awaiting_service: bool, coord_x: f64, coord_y: f64, destination_x: f64, destination_y: f64, id: uuid::Uuid) -> CustomerDto {
         CustomerDto {
             awaiting_service,
             coord_x,

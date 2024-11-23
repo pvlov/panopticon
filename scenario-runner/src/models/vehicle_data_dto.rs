@@ -17,7 +17,7 @@ pub struct VehicleDataDto {
     #[serde(rename = "id")]
     pub id: uuid::Uuid,
     #[serde(rename = "totalTravelTime")]
-    pub total_travel_time: f32,
+    pub total_travel_time: f64,
     #[serde(rename = "totalTrips")]
     pub total_trips: u32,
     #[serde(rename = "travelTimes")]
@@ -28,7 +28,7 @@ impl VehicleDataDto {
     /// The vehicle data transfer object
     pub fn new(
         id: uuid::Uuid,
-        total_travel_time: f32,
+        total_travel_time: f64,
         total_trips: u32,
         travel_times: String,
     ) -> VehicleDataDto {

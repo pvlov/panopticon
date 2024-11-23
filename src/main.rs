@@ -1,6 +1,8 @@
 mod api_wrapper;
 mod handler;
-mod scenario_solver;
+mod scenario;
+mod scenario_manager;
+mod solvers;
 
 use std::sync::Arc;
 
@@ -28,7 +30,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::NormalizePath::default())
             .app_data(web::Data::new(app_data.clone()))
             .service(handler::health)
-            .service(handler::run_scenario_by_id)
+            .service(handler::run_scenario)
             .service(handler::list_scenarios)
     })
     .bind(("0.0.0.0", 8081))?
