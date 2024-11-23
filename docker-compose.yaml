@@ -3,7 +3,7 @@ services:
     image: mikechatzis/hackatumtsichallenge:backend
     ports:
       - "8080:8080"
-    restart: no
+    restart: "no"
     depends_on:
       - postgres
   scenariorunner:
@@ -24,12 +24,12 @@ services:
       POSTGRES_DB: tsi
     ports:
       - "5432:5432"
-    restart: no
+    restart: "no"
   frontend:
     image: mikechatzis/hackatumtsichallenge:frontend
     ports:
       - "9000:9000"
-    restart: no
+    restart: "no"
     depends_on:
       - backend
 

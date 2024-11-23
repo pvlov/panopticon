@@ -1,10 +1,20 @@
+mod api_wrapper;
 mod handler;
+mod scenario;
+mod scenario_manager;
+mod solvers;
+
+use std::sync::Arc;
 
 use actix_cors::Cors;
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{http::Uri, middleware, web, App, HttpServer};
+use api_wrapper::ApiWrapper;
+use tokio::sync::RwLock;
 
-#[derive(Clone, Default)]
-struct AppContext;
+#[derive(Clone, Default, Debug)]
+struct AppContext {
+    api_wrapper: ApiWrapper,
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -17,11 +27,13 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(middleware::Logger::default())
             .wrap(cors)
+            .wrap(middleware::NormalizePath::default())
             .app_data(web::Data::new(app_data.clone()))
             .service(handler::health)
-            .service(handler::taxis)
+            .service(handler::run_scenario)
+            .service(handler::list_scenarios)
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(("0.0.0.0", 8081))?
     .run()
     .await
 }
