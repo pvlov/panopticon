@@ -32,3 +32,43 @@ export function randomHumanEmoji() {
 
   return humanEmojis[Math.floor(Math.random() * humanEmojis.length)];
 }
+
+export function randomVehicle() {
+  const carEmojis = [
+    "🚗", // Red Car
+    "🚕", // Taxi
+    "🚙", // SUV
+    "🚌", // Bus
+    "🚎", // Trolleybus
+    "🏎️", // Racing Car
+    "🚓", // Police Car
+    "🚑", // Ambulance
+    "🚒", // Fire Truck
+    "🚐", // Minibus
+    "🚚", // Delivery Truck
+    "🚛", // Articulated Lorry
+    "🚜", // Tractor
+    "🛻", // Pickup Truck
+    "🚍", // Oncoming Bus
+    "🚔", // Oncoming Police Car
+    "🚖", // Oncoming Taxi
+    "🚘", // Oncoming Automobile
+    "🚡", // Aerial Tramway
+    "🚠", // Mountain Cableway
+    "🚟", // Suspension Railway
+    "🚃", // Railway Car
+    "🚋", // Tram Car
+    "🚝", // Monorail
+    "🚞", // Mountain Railway
+    "🚄", // High-Speed Train
+    "🚅", // Bullet Train
+    "🚈", // Light Rail
+    "🚂", // Locomotive
+    "🚆", // Train
+    "🚇", // Metro
+    "🚊", // Tram
+    "🚉", // Station
+  ];
+
+  return carEmojis[Math.floor(Math.random() * carEmojis.length)];
+}

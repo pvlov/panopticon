@@ -157,7 +157,7 @@ export function PieChartCard({ title, subtitle, data }: PieChartProps) {
                                                     y={(viewBox.cy || 0) + 24}
                                                     className="fill-muted-foreground"
                                                 >
-                                                    Vehicles
+                                                    RoboTaxis
                                                 </tspan>
                                             </text>
                                         )
