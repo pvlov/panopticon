@@ -1,22 +1,22 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 import { WEBSOCKET_URL } from "@/config";
+import { InitialStateMessage, MessageType, WebSocketMessage, Vehicle, Customer , CustomerUpdateMessage, VehicleUpdateMessage } from "@/model/message.ts";
 
-interface MessageIn {
-    content: string;
-}
 interface MessageOut {
     content: string;
 }
 
 interface WebSocketContextType {
-    messages: MessageIn[];
+    vehicles: Map<string, Vehicle>;
+    customers: Map<string, Customer>;
     sendMessage: (message: MessageOut) => void;
 }
 
 const WebSocketContext = createContext<WebSocketContextType | undefined>(undefined);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [messages, setMessages] = useState<MessageIn[]>([]);
+    const [customers, setCustomers] = useState<Map<string, Customer>>(new Map());
+    const [vehicles, setVehicles] = useState<Map<string, Vehicle>>(new Map());
     const [socket, setSocket] = useState<WebSocket | null>(null);
 
     useEffect(() => {
@@ -28,8 +28,34 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         };
 
         ws.onmessage = (event) => {
-            const message: MessageIn = JSON.parse(event.data) as MessageIn;
-            setMessages((prevMessages) => [...prevMessages, message]);
+            const message: WebSocketMessage = JSON.parse(event.data) as WebSocketMessage;
+
+            switch (message.type) {
+                case MessageType.INITIAL_STATE: {
+
+                    const initialStateMessage = message as InitialStateMessage;
+                    for (const customer of initialStateMessage.customers) {
+                        setCustomers((prevCustomers) => new Map(prevCustomers.set(customer.id, customer)));
+                    }
+                    for (const vehicle of initialStateMessage.vehicles) {
+                        setVehicles((prevVehicles) => new Map(prevVehicles.set(vehicle.id, vehicle)));
+                    }
+                    break;
+                }
+
+                case MessageType.VEHICLE_UPDATE: {
+                    const vehicleUpdateMessage = message as VehicleUpdateMessage;
+                    setVehicles((prevVehicles) => new Map(prevVehicles.set(vehicleUpdateMessage.vehicle.id, vehicleUpdateMessage.vehicle)));
+
+                    break;
+                }
+
+                case MessageType.PERSON_UPDATE: {
+                    const customerUpdateMessage = message as CustomerUpdateMessage;
+                    setCustomers((prevCustomers) => new Map(prevCustomers.set(customerUpdateMessage.customer.id, customerUpdateMessage.customer)));
+                    break;
+                }
+            }
         };
 
         ws.onerror = (error) => {
@@ -52,7 +78,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
 
     return (
-        <WebSocketContext.Provider value={{ messages, sendMessage }}>
+        <WebSocketContext.Provider value={{ customers, vehicles, sendMessage }}>
             {children}
         </WebSocketContext.Provider>
     );
