@@ -16,21 +16,6 @@ async fn health() -> impl Responder {
     "UP"
 }
 
-// #[get("/api/set_scenario_runner_uri/{uri}")]
-// async fn set_scenario_runner_uri(
-//     req_params: web::Path<String>,
-//     ctx: web::Data<AppContext>,
-// ) -> impl Responder {
-//     let api_str: String = req_params.into_inner();
-//     let Ok(api_uri) = Uri::from_str(&api_str) else {
-//         return HttpResponse::InternalServerError().body("Could not parse given url");
-//     };
-
-//     ctx.scenario_runner_endpoint.write().await.replace(api_uri);
-
-//     HttpResponse::Ok().finish()
-// }
-
 #[get("/api/run_scenario/{scenario_id}/{solver}")]
 async fn run_scenario(
     req_params: web::Path<(Uuid, String)>,

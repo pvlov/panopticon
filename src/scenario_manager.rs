@@ -96,6 +96,13 @@ impl<'a> ScenarioManager<'a> {
 
                 Ok(())
             });
+
+            last_tasks.insert(vehicle_id, task);
+        }
+
+        // wait for all tasks to complete
+        for (_, task) in last_tasks {
+            let _ = task.await?;
         }
 
         Ok(())
