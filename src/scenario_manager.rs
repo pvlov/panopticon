@@ -56,8 +56,6 @@ impl<'a> ScenarioManager<'a> {
             let last_future = last_tasks.remove(&vehicle_id);
             let api = self.api.clone();
 
-            // TODO fallibility?
-            // nah, I'd win
             let task: task::JoinHandle<anyhow::Result<()>> = task::spawn(async move {
                 // await the vehicles last Future so that we don't send
                 // anything until the previous Future has completed
