@@ -27,15 +27,15 @@ import {
 const chartConfig = {
     idle: {
         label: "Idle",
-        color: "hsl(var(--chart-1))",
+        color: "hsl(var(--chart-3))",
     },
     picking: {
         label: "Picking Up",
-        color: "hsl(var(--chart-2))",
+        color: "hsl(var(--chart-4))",
     },
     transporting: {
         label: "Transporting",
-        color: "hsl(var(--chart-3))",
+        color: "hsl(var(--chart-5))",
     },
 } satisfies ChartConfig
 

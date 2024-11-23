@@ -1,5 +1,5 @@
 import * as React from "react";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Polyline } from "react-leaflet";
 import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MUNICH_X_CENTER, MUNICH_Y_CENTER } from "@/config.ts";
@@ -15,6 +15,9 @@ const emojiIcon = (emoji: string) =>
     });
 
 const Map = ({ customers, vehicles }: { customers: Customer[], vehicles: Vehicle[] }) => {
+
+    const pairs = [0, 1, 2];
+
     return (
         <MapContainer center={[MUNICH_X_CENTER, MUNICH_Y_CENTER]} zoom={12} className="h-full w-full rounded-md shadow-md">
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -32,6 +35,21 @@ const Map = ({ customers, vehicles }: { customers: Customer[], vehicles: Vehicle
                     icon={emojiIcon(randomHumanEmoji())}
                 />
             ))}
+            {pairs.map((pair, index) => {
+                const customer = customers[pair];
+                const vehicle = vehicles[pair];
+                return (
+                    <Polyline
+                        key={`line-${index}`}
+                        positions={[
+                            [customer.coordX, customer.coordY],
+                            [vehicle.coordX, vehicle.coordY]
+                        ]}
+                        color="rgba(128, 128, 128, 0.8)"
+                        dashArray="5, 5" // Creates a dashed pattern
+                    />
+                );
+            })}
         </MapContainer>
     );
 };

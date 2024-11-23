@@ -1,6 +1,5 @@
 import Map from "@/components/map.tsx";
 import TopBar from "@/components/top-bar.tsx";
-import { LineChart } from "@/components/line-chart.tsx";
 import { PieChartCard } from "@/components/pie-chart.tsx";
 import { ThemeProvider } from "@/components/theme-provider.tsx";
 import { WebSocketProvider, useWebSocket } from "@/hooks/WebSocketContext.tsx";
@@ -9,6 +8,7 @@ import "leaflet/dist/leaflet.css";
 import { RadialChart } from "@/components/radial-chart.tsx";
 import { AppState, Customer, Vehicle, VehicleMetrics } from "@/model/models.ts";
 import { BarChartCard} from "@/components/bar-chart.tsx";
+import { ControlPanel } from "@/components/control-panel.tsx";
 
 
 const exampleCustomers: Customer[] = [
@@ -202,6 +202,7 @@ function AppContent() {
                             subtitle="Total distance travelled by all RoboTaxis"
                             appState={appState}
                         />
+                        < ControlPanel />
                     </div>
 
                 </div>
