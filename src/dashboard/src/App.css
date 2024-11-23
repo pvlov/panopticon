@@ -1,6 +1,6 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
+  /* max-width: 1280px; */
+  /* margin: 0 auto; */
   padding: 2rem;
   text-align: center;
 }
@@ -16,6 +16,69 @@
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  overflow: hidden;
+}
+
+.top-bar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 10px;
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.top-bar-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.main-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  overflow: hidden;
+}
+
+.map-container {
+  flex: 1;
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+  padding: 10px 10px 55px 10px;
+}
+
+.charts-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px; /* Minimal padding between charts */
+  flex: 1;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+  padding: 10px 10px 55px 10px;
+}
+
+.padded-left-half {
+  width: calc(50vw - 20px); /* 50% of the viewport width minus padding */
+  height: calc(100vh - 20px); /* 100% of the viewport height minus padding */
+  padding: 60px 0px 5px 25px; /* Add padding around the map */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 @keyframes logo-spin {
