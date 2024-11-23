@@ -4,12 +4,14 @@ mod scenario;
 mod scenario_manager;
 mod solvers;
 
-use std::sync::Arc;
-
 use actix_cors::Cors;
-use actix_web::{http::Uri, middleware, web, App, HttpServer};
+use actix_web::{middleware, web, App, HttpServer};
 use api_wrapper::ApiWrapper;
-use tokio::sync::RwLock;
+use uuid::Uuid;
+
+pub type CustomerID = Uuid;
+pub type VehicleID = Uuid;
+pub type ScenarioID = Uuid;
 
 #[derive(Clone, Default, Debug)]
 struct AppContext {

@@ -1,9 +1,15 @@
-use std::fmt::Display;
+use std::{collections::HashMap, sync::Arc};
 
 use actix_web::{error::ErrorInternalServerError, get, web, HttpResponse, Responder, Result};
+use scenario_runner::models::ScenarioDto;
 use uuid::Uuid;
 
-use crate::{solvers::random::RandomSolver, AppContext};
+use crate::{
+    scenario::{Customer, Scenario, Vehicle},
+    scenario_manager::ScenarioManager,
+    solvers::{random::RandomSolver, ScenarioSolver},
+    AppContext, VehicleID,
+};
 
 #[get("/health")]
 async fn health() -> impl Responder {
@@ -32,8 +38,8 @@ async fn run_scenario(
 ) -> Result<impl Responder> {
     let (scenario_id, solver_name) = req_params.into_inner();
 
-    let solver = match solver_name.to_lowercase().as_str() {
-        "random" => RandomSolver,
+    let solver: Box<dyn ScenarioSolver> = match solver_name.to_lowercase().as_str() {
+        "random" => Box::new(RandomSolver),
         _ => todo!(),
     };
 
@@ -45,7 +51,17 @@ async fn run_scenario(
         .await
         .map_err(ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().body(format!("Scenario ID: {}", scenario_id)))
+    let scenario = scenario.try_into().map_err(ErrorInternalServerError)?;
+
+    let api = Arc::new(ctx.api_wrapper.clone());
+
+    let scenario_manager = ScenarioManager::new(Arc::new(scenario), solver, api, ctx.clone());
+
+    tokio::spawn(async move {
+        scenario_manager.start().await.unwrap();
+    });
+
+    Ok(HttpResponse::Ok().body(format!("Started scenario ID: {}", scenario_id)))
 }
 
 #[get("/api/list_scenarios")]
@@ -76,4 +92,34 @@ async fn get_scenario(
         .map_err(ErrorInternalServerError)?;
 
     serde_json::to_string(&scenario).map_err(ErrorInternalServerError)
+}
+
+impl<'a> TryFrom<ScenarioDto> for Scenario<'a> {
+    type Error = anyhow::Error;
+
+    fn try_from(dto: ScenarioDto) -> anyhow::Result<Self> {
+        // pub vehicles: HashMap<Uuid, Vehicle<'a>>,
+        // pub customers: HashMap<Uuid, Customer>,
+
+        let vehicles: HashMap<VehicleID, Vehicle<'a>> = dto
+            .vehicles
+            .into_iter()
+            .map(Vehicle::try_from)
+            .map(|res| res.map(|v| (v.id, v)))
+            .collect::<Result<HashMap<_, _>, _>>()?;
+
+        let customers: HashMap<Uuid, Customer> = dto
+            .customers
+            .into_iter()
+            .map(Customer::try_from)
+            .map(|res| res.map(|c| (c.id, c)))
+            .collect::<Result<HashMap<_, _>, _>>()?;
+
+        Ok(Scenario {
+            id: dto.id,
+            vehicles,
+            customers,
+            status: dto.status,
+        })
+    }
 }

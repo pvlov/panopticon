@@ -1,9 +1,9 @@
 use rand::{seq::SliceRandom, thread_rng};
 use uuid::Uuid;
 
-use crate::scenario::{Customer, Scenario};
+use crate::scenario::Scenario;
 
-use super::{ScenarioSolver, VehicleAssignment, VehicleTask};
+use super::{ScenarioSolver, TaskAction, VehicleTask};
 
 pub struct RandomSolver;
 
@@ -17,11 +17,10 @@ impl ScenarioSolver for RandomSolver {
         let assignments = customer_ids
             .into_iter()
             .zip(vehicle_ids.into_iter().cycle())
-            .map(|(c_id, v_id)| VehicleAssignment {
-                customer: c_id,
-                vehicle: v_id,
-            })
-            .map(VehicleTask::Assignment);
+            .map(|(c_id, v_id)| VehicleTask {
+                vehicle_id: v_id,
+                action: TaskAction::Assignment(c_id),
+            });
 
         Box::new(assignments)
     }
