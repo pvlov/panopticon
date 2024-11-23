@@ -17,11 +17,11 @@ pub struct ScenarioDto {
     #[serde(rename = "customers")]
     pub customers: Vec<models::CustomerDto>,
     #[serde(rename = "endTime")]
-    pub end_time: String,
+    pub end_time: Option<String>,
     #[serde(rename = "id")]
     pub id: uuid::Uuid,
     #[serde(rename = "startTime")]
-    pub start_time: String,
+    pub start_time: Option<String>,
     #[serde(rename = "status")]
     pub status: String,
     #[serde(rename = "vehicles")]
@@ -32,9 +32,9 @@ impl ScenarioDto {
     /// The scenario data transfer object
     pub fn new(
         customers: Vec<models::CustomerDto>,
-        end_time: String,
+        end_time: Option<String>,
         id: uuid::Uuid,
-        start_time: String,
+        start_time: Option<String>,
         status: String,
         vehicles: Vec<models::StandardMagentaVehicleDto>,
     ) -> ScenarioDto {
