@@ -1,5 +1,6 @@
 pub mod nearest;
 pub mod random;
+pub mod tree;
 
 use std::time::Duration;
 
