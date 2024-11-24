@@ -4,7 +4,10 @@ use rand::{seq::SliceRandom, thread_rng};
 use rstar::{primitives::GeomWithData, Point, RTree};
 use uuid::Uuid;
 
-use crate::scenario::{Customer, Position, Scenario};
+use crate::{
+    scenario::{Customer, Position, Scenario},
+    solvers::{calc_wait_stats, Solution},
+};
 
 use super::{ScenarioSolver, TaskAction, VehicleTask};
 
@@ -14,6 +17,8 @@ type CustomerLocation = GeomWithData<[f64; 2], Uuid>;
 
 impl ScenarioSolver for NearestSolver {
     fn solve(&self, scenario: &Scenario) -> Box<dyn Iterator<Item = VehicleTask>> {
+        let start_time = std::time::Instant::now();
+
         let customer_ids: Vec<Uuid> = scenario.customers.values().map(|c| c.id).collect();
 
         let vehicle_ids: Vec<Uuid> = scenario.vehicles.values().map(|v| v.id).collect();
@@ -53,6 +58,28 @@ impl ScenarioSolver for NearestSolver {
                 }
             }
         }
+
+        let elapsed = start_time.elapsed();
+
+        log::info!(
+            "Nearest R*-Tree solver took {} s for {} Customers and {} Vehicles",
+            elapsed.as_secs_f64(),
+            scenario.customers.len(),
+            scenario.vehicles.len()
+        );
+
+        let solution = Solution {
+            tasks: assignments.clone(),
+            scenario: scenario.clone(),
+        };
+        let wait_times = solution.measure_waits();
+        let (min, max, avg, median) = calc_wait_stats(wait_times);
+
+        log::info!("Nearest solver solution wait times stats:");
+        log::info!("Min:\t\t{}", min);
+        log::info!("Max:\t\t{}", max);
+        log::info!("Avg:\t\t{}", avg);
+        log::info!("Median:\t{}", median);
 
         Box::new(assignments.into_iter())
     }

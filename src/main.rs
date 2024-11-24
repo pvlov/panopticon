@@ -4,13 +4,8 @@ mod scenario;
 mod scenario_manager;
 mod solvers;
 
-
 use actix_cors::Cors;
-use actix_web::{
-    middleware,
-    web::{Data},
-    App, HttpServer,
-};
+use actix_web::{middleware, web::Data, App, HttpServer};
 use api_wrapper::ApiWrapper;
 use tokio::sync::RwLock;
 use uuid::Uuid;
