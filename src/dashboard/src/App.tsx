@@ -5,15 +5,17 @@ import { ThemeProvider } from "@/components/theme-provider.tsx";
 import './App.css'
 import "leaflet/dist/leaflet.css";
 import { RadialChart } from "@/components/radial-chart.tsx";
-import {AppState, Customer, RawAppState, Vehicle, VehicleMetrics} from "@/model/models.ts";
+import {AppState, Vehicle, } from "@/model/models.ts";
 import { BarChartCard} from "@/components/bar-chart.tsx";
 import { ControlPanel } from "@/components/control-panel.tsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import { BASE_PATH, SCENARIO_ID } from "@/config.ts";
+import {BASE_PATH, SCENARIO_ID, setScenarioId, setSolver, SOLVER} from "@/config.ts";
+import SelectionScreen from "@/components/selection-screen.tsx";
+
 
 function initScenario(scenarioId: string) {
-    const url = `${BASE_PATH}/run_scenario/${scenarioId}/random/0.01`;
+    const url = `${BASE_PATH}/run_scenario/${scenarioId}/${SOLVER}/0.05`;
 
     axios.get(url)
         .then(response => console.log(response))
@@ -105,10 +107,21 @@ function AppContent() {
 }
 function App() {
 
+    const [selectionMade, setSelectionMade] = useState(false);
+
+    const handleSelection = (scenarioId: string, solver: string) => {
+        setScenarioId(scenarioId);
+        setSolver(solver);
+        setSelectionMade(true);
+        initScenario(scenarioId)
+    }
+
     initScenario(SCENARIO_ID);
 
     return (
-        <AppContent />
+        <div>
+            {selectionMade ? <AppContent /> : <SelectionScreen onSelection={handleSelection} />}
+        </div>
     )
 }
 
