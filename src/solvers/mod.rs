@@ -5,8 +5,7 @@ use std::time::Duration;
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::scenario::Scenario;
-type CustomerID = Uuid;
+use crate::{scenario::Scenario, CustomerID};
 
 #[derive(Debug, Clone, Serialize)]
 pub enum TaskAction {
@@ -20,6 +19,6 @@ pub struct VehicleTask {
     pub action: TaskAction,
 }
 
-pub trait ScenarioSolver {
+pub trait ScenarioSolver: Send + Sync {
     fn solve(&self, scenario: &Scenario) -> Box<dyn Iterator<Item = VehicleTask>>;
 }
