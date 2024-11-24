@@ -7,7 +7,7 @@ use uuid::Uuid;
 use crate::{
     scenario::{Customer, Scenario, Vehicle},
     scenario_manager::ScenarioManager,
-    solvers::{random::RandomSolver, ScenarioSolver},
+    solvers::{nearest::NearestSolver, random::RandomSolver, ScenarioSolver},
     AppContext, VehicleID,
 };
 
@@ -25,6 +25,7 @@ async fn run_scenario(
 
     let solver: Box<dyn ScenarioSolver> = match solver_name.to_lowercase().as_str() {
         "random" => Box::new(RandomSolver),
+        "nearest" => Box::new(NearestSolver),
         _ => todo!(),
     };
 

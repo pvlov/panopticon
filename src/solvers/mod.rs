@@ -1,4 +1,5 @@
 pub mod random;
+pub mod nearest;
 
 use std::time::Duration;
 
