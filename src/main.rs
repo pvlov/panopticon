@@ -37,7 +37,7 @@ async fn main() -> std::io::Result<()> {
     let app_data = Data::new(AppContext::default());
 
     HttpServer::new(move || {
-        let cors = Cors::default();
+        let cors = Cors::permissive();
         App::new()
             .wrap(middleware::Logger::default())
             .wrap(cors)

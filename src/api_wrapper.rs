@@ -210,7 +210,7 @@ impl ApiWrapper {
 
     pub async fn launch_scenario(&self, id: ScenarioID, speed: Option<f64>) -> anyhow::Result<()> {
         // POST /Runner/launch_scenario/{scenario_id}
-        let speed = speed.unwrap_or(0.2);
+        let speed = speed.unwrap_or(5.);
         log::debug!("Launching scenario {} with speed {}", id, speed);
 
         let launch_url = self
