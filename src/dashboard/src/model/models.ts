@@ -28,6 +28,7 @@ interface Vehicle {
 }
 
 interface VehicleMetrics {
+    totalEnergyConsumption: number;
     totalDistance: number;
     idleCount: number;
     collectingCount: number;

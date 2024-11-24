@@ -39,6 +39,7 @@ export function RadialChart({ customers }: Customer[]) {
     ]
 
     const totalCustomers = customers.length
+    console.log("Total Customers: ", totalCustomers)
 
     return (
         <Card className="flex flex-col">

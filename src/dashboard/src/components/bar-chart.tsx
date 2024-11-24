@@ -22,11 +22,16 @@ const chartConfig = {
         label: "Total Distance",
         color: "hsl(var(--chart-1))",
     },
+    totalEnergyConsumption: {
+        label: "Total Energy Consumption",
+        color: "hsl(var(--chart-2))",
+    }
 } satisfies ChartConfig;
 
 export function BarChartCard({ title, subtitle, appState }: { title: string; subtitle: string; appState: AppState }) {
     const chartData = [
         { metric: "totalDistance", value: appState.vehicleMetrics.totalDistance, fill: chartConfig.totalDistance.color },
+        { metric: "totalEnergyConsumption", value: appState.vehicleMetrics.totalEnergyConsumption, fill: chartConfig.totalEnergyConsumption.color },
     ];
 
     return (

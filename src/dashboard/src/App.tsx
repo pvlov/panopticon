@@ -28,11 +28,16 @@ const useAppState = (interval: number = 100) => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(url);
+
+                const totalDistance = response.data.vehicles.reduce((acc: number, vehicle: Vehicle) => acc + (vehicle.distanceTravelled || 0), 0);
+                const totalEnergyConsumption = 0.00015 * totalDistance;
+
                 const parsedData = {
                     customers: response.data.customers,
                     vehicles: response.data.vehicles,
                     vehicleMetrics: {
-                        totalDistance: 20,
+                        totalEnergyConsumption: totalEnergyConsumption, // kwh/m
+                        totalDistance: totalDistance / 1000, // == km
                         idleCount: response.data.vehicles.reduce((acc: number, vehicle: Vehicle) => acc + (vehicle.customerId === null ? 1 : 0), 0),
                         collectingCount: response.data.vehicles.reduce((acc: number, vehicle: Vehicle) => acc + (vehicle.vehicleSpeed > 0 ? 1 : 0), 0),
                         transportingCount: response.data.vehicles.reduce((acc: number, vehicle: Vehicle) => acc + (vehicle.customerId !== null ? 1 : 0), 0),
@@ -82,8 +87,8 @@ function AppContent() {
                             data={pieData}
                         />
                         < BarChartCard
-                            title="Total Distance"
-                            subtitle="Total distance travelled by all RoboTaxis"
+                            title="Key metrics"
+                            subtitle="Important metrics on the current scenario"
                             appState={appState}
                         />
                         < ControlPanel />
