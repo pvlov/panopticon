@@ -194,8 +194,6 @@ impl ApiWrapper {
             .query(&[("db_scenario_id", id)])
             .body("{}");
 
-        println!("Request: {:?}", req);
-
         let res = req.send().await?;
 
         log::debug!("Initialize scenario response: {:?}", res);

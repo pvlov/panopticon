@@ -4,10 +4,13 @@ mod scenario;
 mod scenario_manager;
 mod solvers;
 
-use std::sync::Arc;
 
 use actix_cors::Cors;
-use actix_web::{middleware, web, App, HttpServer};
+use actix_web::{
+    middleware,
+    web::{Data},
+    App, HttpServer,
+};
 use api_wrapper::ApiWrapper;
 use tokio::sync::RwLock;
 use uuid::Uuid;
@@ -23,7 +26,7 @@ struct Metrics {
 
 #[derive(Default, Debug)]
 struct AppContext {
-    api_wrapper: Arc<ApiWrapper>,
+    api_wrapper: ApiWrapper,
     metrics: RwLock<Option<Metrics>>,
     current_scenario_id: RwLock<Option<ScenarioID>>,
 }
@@ -31,15 +34,15 @@ struct AppContext {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init();
+    let app_data = Data::new(AppContext::default());
 
     HttpServer::new(move || {
         let cors = Cors::default();
-        let app_data = AppContext::default();
         App::new()
             .wrap(middleware::Logger::default())
             .wrap(cors)
             .wrap(middleware::NormalizePath::default())
-            .app_data(web::Data::new(app_data))
+            .app_data(app_data.clone())
             .service(handler::health)
             .service(handler::run_scenario)
             .service(handler::list_scenarios)

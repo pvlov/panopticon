@@ -38,7 +38,7 @@ async fn run_scenario(
 
     let scenario = scenario.try_into().map_err(ErrorInternalServerError)?;
 
-    let api = ctx.api_wrapper.clone();
+    let api = Arc::new(ctx.api_wrapper.clone());
 
     let scenario_manager = ScenarioManager::new(Arc::new(scenario), solver, api, ctx);
 
