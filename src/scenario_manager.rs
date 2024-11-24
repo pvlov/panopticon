@@ -1,6 +1,7 @@
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
 use anyhow::anyhow;
+use futures::executor::block_on;
 use scenario_runner::models::StandardMagentaVehicleDto;
 use tokio::task;
 
@@ -45,7 +46,7 @@ impl<'a> ScenarioManager<'a> {
         // launch scenario
         log::debug!("Launching scenario {}", self.scenario.id);
         self.api
-            .launch_scenario(self.scenario.id, Some(0.2))
+            .launch_scenario(self.scenario.id, Some(0.01))
             .await?;
 
         self.app_ctx
@@ -69,8 +70,12 @@ impl<'a> ScenarioManager<'a> {
                 // await the vehicles last Future so that we don't send
                 // anything until the previous Future has completed
                 if let Some(handle) = last_future {
-                    let _ = handle.await?; // an Error will propagate down the task chain
+                    // let _ = handle.await?; // an Error will propagate down the task chain
+
+                    let _ = block_on(handle)?;
                 }
+
+                log::debug!("Vehicle {} entering wait loop", vehicle_id);
 
                 loop {
                     let vehicle_info = api.get_vehicle(vehicle_id).await?;

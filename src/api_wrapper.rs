@@ -64,7 +64,7 @@ impl ApiWrapper {
         }
 
         let body = res.text().await?;
-        log::debug!("Got scenario {} response: {}", id, body);
+        log::debug!("Got scenario {} response", id);
         Ok(body)
     }
 
@@ -100,7 +100,7 @@ impl ApiWrapper {
         }
 
         let body = res.text().await?;
-        log::debug!("Got started scenario {} response: {}", id, body);
+        log::debug!("Got started scenario {} response", id);
         Ok(body)
     }
 
@@ -128,7 +128,7 @@ impl ApiWrapper {
 
         let body = res.text().await?;
 
-        log::debug!("Got vehicle {} response: {}", id, body);
+        log::debug!("Got vehicle {} response", id);
 
         Ok(serde_json::from_str(&body)?)
     }
