@@ -27,7 +27,7 @@ impl ApiWrapper {
         //   'http://localhost:8080/scenarios' \
         //   -H 'accept: application/json'
 
-        log::trace!("Getting scenarios from scenario manager");
+        log::debug!("Getting scenarios from scenario manager");
 
         let scenarios_url = self.scenario_manager_url.with_path("/scenarios");
         let res = self
@@ -39,13 +39,13 @@ impl ApiWrapper {
 
         let body = res.text().await?;
 
-        log::trace!("Got scenarios response: {}", body);
+        log::debug!("Got scenarios response: {}", body);
 
         Ok(serde_json::from_str(&body)?)
     }
 
     async fn get_init_scenario_str(&self, id: Uuid) -> Result<String, anyhow::Error> {
-        log::trace!("Getting scenario {} from scenario manager", id);
+        log::debug!("Getting scenario {} from scenario manager", id);
         let scenario_url = self
             .scenario_manager_url
             .with_path(&format!("/scenarios/{}", id));
@@ -64,7 +64,7 @@ impl ApiWrapper {
         }
 
         let body = res.text().await?;
-        log::trace!("Got scenario {} response: {}", id, body);
+        log::debug!("Got scenario {} response: {}", id, body);
         Ok(body)
     }
 
@@ -81,7 +81,7 @@ impl ApiWrapper {
     pub async fn get_started_scenario_str(&self, id: Uuid) -> Result<String, anyhow::Error> {
         // /Scenarios/get_scenario/{scenario_id}
 
-        log::trace!("Getting started scenario {}", id);
+        log::debug!("Getting started scenario {}", id);
         let scenario_url = self
             .scenario_runner_url
             .with_path(&format!("/Scenarios/get_scenario/{}", id));
@@ -100,7 +100,7 @@ impl ApiWrapper {
         }
 
         let body = res.text().await?;
-        log::trace!("Got started scenario {} response: {}", id, body);
+        log::debug!("Got started scenario {} response: {}", id, body);
         Ok(body)
     }
 
@@ -113,7 +113,7 @@ impl ApiWrapper {
     pub async fn get_vehicle(&self, id: Uuid) -> Result<StandardMagentaVehicleDto, anyhow::Error> {
         // /vehicles/{vehicleId}
 
-        log::trace!("Getting vehicle: {}", id);
+        log::debug!("Getting vehicle: {}", id);
 
         let vehicle_url = self
             .scenario_manager_url
@@ -128,7 +128,7 @@ impl ApiWrapper {
 
         let body = res.text().await?;
 
-        log::trace!("Got vehicle {} response: {}", id, body);
+        log::debug!("Got vehicle {} response: {}", id, body);
 
         Ok(serde_json::from_str(&body)?)
     }
@@ -141,7 +141,7 @@ impl ApiWrapper {
     ) -> anyhow::Result<()> {
         // PUT /Scenarios/update_scenario/{scenario_id}
 
-        log::trace!(
+        log::debug!(
             "Assigning vehicle {} to customer {} in scenario {}",
             vehicle_id,
             customer_id,
@@ -149,7 +149,7 @@ impl ApiWrapper {
         );
 
         let update_url = self
-            .scenario_manager_url
+            .scenario_runner_url
             .with_path(&format!("/Scenarios/update_scenario/{}", scenario_id));
 
         let update_str = format!(
@@ -166,47 +166,58 @@ impl ApiWrapper {
             .send()
             .await?;
 
-        log::trace!("Assign vehicle response: {:?}", res);
+        log::debug!("Assign vehicle response: {:?}", res);
 
         Ok(())
     }
 
     pub async fn initialize_scenario(&self, id: ScenarioID) -> anyhow::Result<()> {
         // POST /Scenarios/initialize_scenario
-        log::trace!("Initializing scenario {}", id);
+
+        // curl -X 'POST' \
+        // 'http://localhost:8090/Scenarios/initialize_scenario?db_scenario_id={id}' \
+        // -H 'accept: application/json' \
+        // -H 'Content-Type: application/json' \
+        // -d '{}'
+
+        log::debug!("Initializing scenario {}", id);
 
         let init_url = self
-            .scenario_manager_url
+            .scenario_runner_url
             .with_path("/Scenarios/initialize_scenario");
 
-        let init_str = self.get_init_scenario_str(id).await?;
-
-        let res = self
+        let req = self
             .client
             .post(init_url)
             .header("accept", "application/json")
             .header("Content-Type", "application/json")
-            .body(init_str)
-            .send()
-            .await?;
+            .query(&[("db_scenario_id", id)])
+            .body("{}");
 
-        log::trace!("Initialize scenario response: {:?}", res);
+        println!("Request: {:?}", req);
+
+        let res = req.send().await?;
+
+        log::debug!("Initialize scenario response: {:?}", res);
 
         if res.status().is_success() {
             Ok(())
         } else {
-            Err(anyhow::anyhow!("Failed to initialize scenario"))
+            Err(anyhow::anyhow!(
+                "Failed to initialize scenario: {}",
+                res.text().await?
+            ))
         }
     }
 
     pub async fn launch_scenario(&self, id: ScenarioID, speed: Option<f64>) -> anyhow::Result<()> {
         // POST /Runner/launch_scenario/{scenario_id}
         let speed = speed.unwrap_or(0.2);
-        log::trace!("Launching scenario {} with speed {}", id, speed);
+        log::debug!("Launching scenario {} with speed {}", id, speed);
 
         let launch_url = self
             .scenario_runner_url
-            .with_path(&format!("/launch_scenario/{}", id));
+            .with_path(&format!("/Runner/launch_scenario/{}", id));
 
         let res = self
             .client
@@ -215,7 +226,7 @@ impl ApiWrapper {
             .send()
             .await?;
 
-        log::trace!("Launch scenario response: {:?}", res);
+        log::debug!("Launch scenario response: {:?}", res);
 
         if res.status().is_success() {
             Ok(())

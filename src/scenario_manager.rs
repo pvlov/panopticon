@@ -39,16 +39,19 @@ impl<'a> ScenarioManager<'a> {
 
     pub async fn start(&self) -> anyhow::Result<()> {
         // initialise scenario
+        log::debug!("Initialising scenario {}", self.scenario.id);
         self.api.initialize_scenario(self.scenario.id).await?;
 
         // launch scenario
+        log::debug!("Launching scenario {}", self.scenario.id);
         self.api
             .launch_scenario(self.scenario.id, Some(0.2))
             .await?;
 
         let mut last_tasks = HashMap::<VehicleID, task::JoinHandle<anyhow::Result<()>>>::new();
 
-        let instructions = (&self.solver).solve(&self.scenario);
+        log::debug!("Lazily solving scenario {}", self.scenario.id);
+        let instructions = self.solver.solve(&self.scenario);
 
         for instruction in instructions {
             let scenario_id = self.scenario.id;

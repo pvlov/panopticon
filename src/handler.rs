@@ -43,7 +43,12 @@ async fn run_scenario(
     let scenario_manager = ScenarioManager::new(Arc::new(scenario), solver, api, ctx.clone());
 
     tokio::spawn(async move {
-        scenario_manager.start().await.unwrap();
+        let res = scenario_manager.start().await;
+
+        if let Err(e) = res {
+            log::error!("Error running scenario: {:?}", e);
+            panic!("Error running scenario: {:?}", e);
+        }
     });
 
     Ok(HttpResponse::Ok().body(format!("Started scenario ID: {}", scenario_id)))
