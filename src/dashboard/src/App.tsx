@@ -13,7 +13,7 @@ import axios from "axios";
 import { BASE_PATH, SCENARIO_ID } from "@/config.ts";
 
 function initScenario(scenarioId: string) {
-    const url = `${BASE_PATH}/run_scenario/${scenarioId}/random`;
+    const url = `${BASE_PATH}/run_scenario/${scenarioId}/random/0.01`;
 
     axios.get(url)
         .then(response => console.log(response))
@@ -29,15 +29,20 @@ const useAppState = (interval: number = 100) => {
             try {
                 const response = await axios.get(url);
 
-                const totalDistance = response.data.vehicles.reduce((acc: number, vehicle: Vehicle) => acc + (vehicle.distanceTravelled || 0), 0);
-                const totalEnergyConsumption = 0.00015 * totalDistance;
+                const totalDistance = (response.data.vehicles.reduce((acc: number, vehicle: Vehicle) => acc + (vehicle.distanceTravelled || 0), 0)) / 10000;
+                const totalEnergyConsumption = 0.015 * totalDistance * 10;
+
+                // make up a totaly bogus way rto calculate the profits using the above data
+                // just to show how we can use the data
+                const totalProfits = (totalDistance * 0.5) - totalEnergyConsumption * 0.1;
 
                 const parsedData = {
                     customers: response.data.customers,
                     vehicles: response.data.vehicles,
                     vehicleMetrics: {
                         totalEnergyConsumption: totalEnergyConsumption, // kwh/m
-                        totalDistance: totalDistance / 1000, // == km
+                        totalDistance: totalDistance, // == km
+                        totalProfits: totalProfits,
                         idleCount: response.data.vehicles.reduce((acc: number, vehicle: Vehicle) => acc + (vehicle.customerId === null ? 1 : 0), 0),
                         collectingCount: response.data.vehicles.reduce((acc: number, vehicle: Vehicle) => acc + (vehicle.vehicleSpeed > 0 ? 1 : 0), 0),
                         transportingCount: response.data.vehicles.reduce((acc: number, vehicle: Vehicle) => acc + (vehicle.customerId !== null ? 1 : 0), 0),

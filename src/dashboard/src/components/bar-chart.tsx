@@ -20,18 +20,23 @@ import {
 const chartConfig = {
     totalDistance: {
         label: "Total Distance",
-        color: "hsl(var(--chart-1))",
+        color: "hsl(var(--chart-3))",
     },
     totalEnergyConsumption: {
         label: "Total Energy Consumption",
-        color: "hsl(var(--chart-2))",
-    }
+        color: "hsl(var(--chart-4))",
+    },
+    totalProfits: {
+        label: "Total Profits",
+        color: "hsl(var(--chart-5))",
+    },
 } satisfies ChartConfig;
 
 export function BarChartCard({ title, subtitle, appState }: { title: string; subtitle: string; appState: AppState }) {
     const chartData = [
         { metric: "totalDistance", value: appState.vehicleMetrics.totalDistance, fill: chartConfig.totalDistance.color },
         { metric: "totalEnergyConsumption", value: appState.vehicleMetrics.totalEnergyConsumption, fill: chartConfig.totalEnergyConsumption.color },
+        { metric: "totalProfits", value: appState.vehicleMetrics.totalProfits, fill: chartConfig.totalProfits.color },
     ];
 
     return (
@@ -69,6 +74,11 @@ export function BarChartCard({ title, subtitle, appState }: { title: string; sub
                     </BarChart>
                 </ChartContainer>
             </CardContent>
+            <CardFooter className="flex-col items-start gap-2 text-sm">
+                <div className="flex gap-2 font-medium leading-none">
+                    Profits up 24.6% this quarter<TrendingUp className="h-4 w-4" />
+                </div>
+            </CardFooter>
         </Card>
     );
 }

@@ -2,7 +2,7 @@ const WEBSOCKET_URL: string = 'ws://localhost:8080/ws';
 
 const BASE_PATH: string = "http://localhost:8081/api"
 
-const SCENARIO_ID: string = "a341b8cb-0718-4440-887b-bacfe01a2c53";
+const SCENARIO_ID: string = "119b74c4-05b8-4eeb-a89f-58c7e4fed53f";
 
 const MUNICH_X_MIN: number = 48.113000;
 const MUNICH_X_MAX: number = 48.165312;
