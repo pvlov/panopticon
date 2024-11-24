@@ -30,8 +30,9 @@ const chartConfig = {
 
 export function RadialChart({ customers }: Customer[]) {
     const awaitingServiceCount = customers.filter(customer => customer.awaitingService).length
+    console.log("Awaiting Service Count: ", awaitingServiceCount)
     const servedCount = customers.length - awaitingServiceCount
-    const endAngle = (servedCount / customers.length) * 180
+    const endAngle = (servedCount / customers.length) * 360
 
     const data = [
         { name: "Served", value: servedCount, fill: "var(--color-served)" },

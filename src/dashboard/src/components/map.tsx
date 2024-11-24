@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { MUNICH_X_CENTER, MUNICH_Y_CENTER } from "@/config.ts";
 import { randomHumanEmoji } from "@/lib/utils.ts";
 import { Customer, Vehicle } from "@/model/models.ts";
+import { emojiMap } from "@/lib/utils.ts";
 
 const emojiIcon = (emoji: string) =>
     new L.DivIcon({
@@ -16,7 +17,26 @@ const emojiIcon = (emoji: string) =>
 
 const Map = ({ customers, vehicles }: { customers: Customer[], vehicles: Vehicle[] }) => {
 
-    const pairs = [0, 1, 2];
+    const pairs = [];
+
+    for (const customer of customers) {
+        if (!emojiMap.has(customer.id)) {
+            emojiMap.set(customer.id, randomHumanEmoji());
+        }
+    }
+
+    for (const vehicle of vehicles) {
+        if (vehicle.customerId) {
+            const customer = customers.find((c) => c.id === vehicle.customerId);
+            if (customer) {
+                pairs.push({
+                    customer: customer,
+                    vehicle: vehicle
+                });
+            }
+        }
+    }
+
 
     return (
         <MapContainer center={[MUNICH_X_CENTER, MUNICH_Y_CENTER]} zoom={12} className="h-full w-full rounded-md shadow-md">
@@ -32,18 +52,16 @@ const Map = ({ customers, vehicles }: { customers: Customer[], vehicles: Vehicle
                 <Marker
                     key={`customer-${index}`}
                     position={[customer.coordX, customer.coordY]}
-                    icon={emojiIcon(randomHumanEmoji())}
+                    icon={emojiIcon(emojiMap.get(customer.id) || "👤")}
                 />
             ))}
             {pairs.map((pair, index) => {
-                const customer = customers[pair];
-                const vehicle = vehicles[pair];
                 return (
                     <Polyline
                         key={`line-${index}`}
                         positions={[
-                            [customer.coordX, customer.coordY],
-                            [vehicle.coordX, vehicle.coordY]
+                            [pair.customer.coordX, pair.customer.coordY],
+                            [pair.vehicle.coordX, pair.vehicle.coordY]
                         ]}
                         color="rgba(128, 128, 128, 0.8)"
                         dashArray="5, 5" // Creates a dashed pattern

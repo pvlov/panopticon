@@ -5,6 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const emojiMap: Map<string, string> = new Map();
+
 export function randomHumanEmoji() {
   const humanEmojis = [
     ["👨", "👨🏻", "👨🏼", "👨🏽", "👨🏾", "👨🏿"], // Man
