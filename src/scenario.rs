@@ -5,7 +5,7 @@ use scenario_runner::models::{CustomerDto, StandardMagentaVehicleDto};
 use serde::Serialize;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Copy, Serialize)]
 pub struct Position {
     pub x: f64,
     pub y: f64,
