@@ -9,4 +9,4 @@ Hackatum 2025 T-Systems Challenge
 - Run the frontend from src/dashboard using `yarn dev`
 
 # Benchmarks
-[Check out our Benchmarks too!](benchmark.md)
+[Check out our Benchmarks too!](benchmarks.md)
