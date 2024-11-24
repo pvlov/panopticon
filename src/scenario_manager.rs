@@ -48,6 +48,18 @@ impl<'a> ScenarioManager<'a> {
             .launch_scenario(self.scenario.id, Some(0.2))
             .await?;
 
+        println!("Scenario {} launched", self.scenario.id);
+
+        let mut write_lock = self.app_ctx.current_scenario_id.write().await;
+        *write_lock = Some(self.scenario.id);
+        dbg!(&*write_lock);
+        drop(write_lock);
+
+        let read_lock = self.app_ctx.current_scenario_id.read().await;
+        dbg!(&*read_lock);
+
+        println!("Scenario {} written to app context", self.scenario.id);
+
         let mut last_tasks = HashMap::<VehicleID, task::JoinHandle<anyhow::Result<()>>>::new();
 
         log::debug!("Lazily solving scenario {}", self.scenario.id);

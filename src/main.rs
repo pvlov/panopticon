@@ -4,6 +4,7 @@ mod scenario;
 mod scenario_manager;
 mod solvers;
 
+use std::sync::Arc;
 
 use actix_cors::Cors;
 use actix_web::{middleware, web, App, HttpServer};
@@ -22,8 +23,9 @@ struct Metrics {
 
 #[derive(Default, Debug)]
 struct AppContext {
-    api_wrapper: ApiWrapper,
+    api_wrapper: Arc<ApiWrapper>,
     metrics: RwLock<Option<Metrics>>,
+    current_scenario_id: RwLock<Option<ScenarioID>>,
 }
 
 #[actix_web::main]
@@ -43,6 +45,7 @@ async fn main() -> std::io::Result<()> {
             .service(handler::list_scenarios)
             .service(handler::get_init_scenario)
             .service(handler::get_started_scenario)
+            .service(handler::get_current_scenario)
     })
     .bind(("0.0.0.0", 8081))?
     .run()

@@ -38,9 +38,9 @@ async fn run_scenario(
 
     let scenario = scenario.try_into().map_err(ErrorInternalServerError)?;
 
-    let api = Arc::new(ctx.api_wrapper.clone());
+    let api = ctx.api_wrapper.clone();
 
-    let scenario_manager = ScenarioManager::new(Arc::new(scenario), solver, api, ctx.clone());
+    let scenario_manager = ScenarioManager::new(Arc::new(scenario), solver, api, ctx);
 
     tokio::spawn(async move {
         let res = scenario_manager.start().await;
@@ -97,6 +97,25 @@ async fn get_started_scenario(
     let scenario_dto = ctx
         .api_wrapper
         .get_started_scenario_str(id)
+        .await
+        .map_err(ErrorInternalServerError)?;
+
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body(scenario_dto))
+}
+
+#[get("/api/get_current_scenario")]
+async fn get_current_scenario(ctx: web::Data<AppContext>) -> Result<impl Responder> {
+    let ctx = ctx.into_inner();
+
+    let read = ctx.current_scenario_id.read().await;
+    dbg!(&read);
+    let scenario_id = read.ok_or_else(|| ErrorInternalServerError("No scenario running"))?;
+
+    let scenario_dto = ctx
+        .api_wrapper
+        .get_started_scenario_str(scenario_id)
         .await
         .map_err(ErrorInternalServerError)?;
 
