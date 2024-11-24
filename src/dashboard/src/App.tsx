@@ -2,14 +2,15 @@ import Map from "@/components/map.tsx";
 import TopBar from "@/components/top-bar.tsx";
 import { PieChartCard } from "@/components/pie-chart.tsx";
 import { ThemeProvider } from "@/components/theme-provider.tsx";
-import { WebSocketProvider, useWebSocket } from "@/hooks/WebSocketContext.tsx";
 import './App.css'
 import "leaflet/dist/leaflet.css";
 import { RadialChart } from "@/components/radial-chart.tsx";
 import { AppState, Customer, Vehicle, VehicleMetrics } from "@/model/models.ts";
 import { BarChartCard} from "@/components/bar-chart.tsx";
 import { ControlPanel } from "@/components/control-panel.tsx";
-
+import {useEffect, useState} from "react";
+import axios from "axios";
+import { BASE_PATH, SCENARIO_ID } from "@/config.ts";
 
 const exampleCustomers: Customer[] = [
     {
@@ -164,14 +165,43 @@ const exampleVehicleMetrics: VehicleMetrics = {
         "transportingCount": 30
     }
 
+async function initScenario(scenarioId: string) {
+    const url = `${BASE_PATH}/${scenarioId}/random`;
+
+    try {
+        const response = await axios.get(url);
+        console.log("Scenario initialized", response.data);
+    } catch (error) {
+        console.error("Error initializing scenario", error);
+    }
+}
+
+const useAppState = (interval: number = 100) => {
+    const url = `${BASE_PATH}/get_current_scenario`;
+
+    const { appState, setAppState } = useState(null);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(url);
+                console.log(response)
+                setAppState(response.data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        const intervalId = setInterval(fetchData, interval);
+
+        return () => clearInterval(intervalId);
+    }, [url, interval, setAppState]);
+
+    return JSON.parse(appState);
+}
+
 function AppContent() {
 
-    // const { appState } = useWebSocket();
-    const appState: AppState = {
-        customers: exampleCustomers,
-        vehicles: exampleVehicle,
-        vehicleMetrics: exampleVehicleMetrics
-    }
+    const appState  = useAppState();
 
     if (!appState) {
         return <h1>:hedge:...</h1>
@@ -210,10 +240,16 @@ function AppContent() {
     )
 }
 function App() {
+
+    useEffect(() => {
+        const initialize = async () => {
+            await initScenario("");
+        }
+        initialize();
+    }, []);
+
     return (
-        <WebSocketProvider>
-            <AppContent />
-        </WebSocketProvider>
+        <AppContent />
     )
 }
 

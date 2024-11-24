@@ -1,4 +1,9 @@
 const WEBSOCKET_URL: string = 'ws://localhost:8080/ws';
+
+const BASE_PATH: string = "localhost:8081/api/"
+
+const SCENARIO_ID: string = "OwO";
+
 const MUNICH_X_MIN: number = 48.113000;
 const MUNICH_X_MAX: number = 48.165312;
 const MUNICH_Y_MIN: number = 11.503302;
@@ -13,5 +18,7 @@ export {
     MUNICH_Y_MIN,
     MUNICH_Y_MAX,
     MUNICH_X_CENTER,
-    MUNICH_Y_CENTER
+    MUNICH_Y_CENTER,
+    BASE_PATH,
+    SCENARIO_ID
 };

@@ -34,9 +34,19 @@ interface VehicleMetrics {
     transportingCount: number;
 }
 
+interface RawAppState {
+    id: string | null,
+    status: string | null,
+    startTime: string | null,
+    endTime: string | null,
+    customers: Customer[];
+    vehicles: Vehicle[];
+}
+
 export {
     VehicleMetrics,
     Customer,
     Vehicle,
-    AppState
+    AppState,
+    RawAppState
 }
