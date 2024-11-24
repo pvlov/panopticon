@@ -85,6 +85,9 @@ impl ApiWrapper {
         let scenario_url = self
             .scenario_runner_url
             .with_path(&format!("/Scenarios/get_scenario/{}", id));
+
+        log::debug!("Getting started scenario from: {}", scenario_url);
+
         let res = self
             .client
             .get(scenario_url)
@@ -92,14 +95,13 @@ impl ApiWrapper {
             .send()
             .await?;
 
-        if res.status().is_server_error() || res.status().is_client_error() {
-            return Err(anyhow::anyhow!(
-                "Failed to get started scenario: {}",
-                res.text().await?
-            ));
+        let status = res.status();
+        let body = res.text().await?;
+        if status.is_server_error() || status.is_client_error() {
+            log::error!("Failed to get started scenario: {}", body);
+            return Err(anyhow::anyhow!("Failed to get started scenario: {}", body));
         }
 
-        let body = res.text().await?;
         log::debug!("Got started scenario {} response", id);
         Ok(body)
     }

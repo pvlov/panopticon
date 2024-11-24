@@ -16,12 +16,12 @@ async fn health() -> impl Responder {
     "UP"
 }
 
-#[get("/api/run_scenario/{scenario_id}/{solver}")]
+#[get("/api/run_scenario/{scenario_id}/{solver}/{speed}")]
 async fn run_scenario(
-    req_params: web::Path<(Uuid, String)>,
+    req_params: web::Path<(Uuid, String, f64)>,
     ctx: web::Data<AppContext>,
 ) -> Result<impl Responder> {
-    let (scenario_id, solver_name) = req_params.into_inner();
+    let (scenario_id, solver_name, speed) = req_params.into_inner();
 
     let solver: Box<dyn ScenarioSolver> = match solver_name.to_lowercase().as_str() {
         "random" => Box::new(RandomSolver),
@@ -40,7 +40,7 @@ async fn run_scenario(
 
     let api = Arc::new(ctx.api_wrapper.clone());
 
-    let scenario_manager = ScenarioManager::new(Arc::new(scenario), solver, api, ctx);
+    let scenario_manager = ScenarioManager::new(Arc::new(scenario), solver, api, ctx, speed);
 
     tokio::spawn(async move {
         let res = scenario_manager.start().await;

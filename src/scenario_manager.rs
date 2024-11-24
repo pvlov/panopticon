@@ -21,6 +21,7 @@ pub struct ScenarioManager<'a> {
     solver: Box<dyn ScenarioSolver>,
     api: Arc<ApiWrapper>,
     app_ctx: Arc<AppContext>,
+    speed: f64,
 }
 
 impl<'a> ScenarioManager<'a> {
@@ -29,12 +30,14 @@ impl<'a> ScenarioManager<'a> {
         solver: Box<dyn ScenarioSolver>,
         api: Arc<ApiWrapper>,
         app_ctx: Arc<AppContext>,
+        speed: f64,
     ) -> Self {
         ScenarioManager {
             scenario,
             solver,
             api,
             app_ctx,
+            speed,
         }
     }
 
@@ -46,7 +49,7 @@ impl<'a> ScenarioManager<'a> {
         // launch scenario
         log::debug!("Launching scenario {}", self.scenario.id);
         self.api
-            .launch_scenario(self.scenario.id, Some(0.01))
+            .launch_scenario(self.scenario.id, Some(self.speed))
             .await?;
 
         self.app_ctx
@@ -65,21 +68,29 @@ impl<'a> ScenarioManager<'a> {
             let vehicle_id = instruction.vehicle_id;
             let last_future = last_tasks.remove(&vehicle_id);
             let api = self.api.clone();
+            let speed = self.speed;
 
             let task: task::JoinHandle<anyhow::Result<()>> = task::spawn(async move {
                 // await the vehicles last Future so that we don't send
                 // anything until the previous Future has completed
                 if let Some(handle) = last_future {
-                    // let _ = handle.await?; // an Error will propagate down the task chain
-
-                    let _ = block_on(handle)?;
+                    handle.await??; // an Error will propagate down the task chain
                 }
 
                 log::debug!("Vehicle {} entering wait loop", vehicle_id);
 
                 loop {
-                    let vehicle_info = api.get_vehicle(vehicle_id).await?;
+                    // let vehicle_info = api.get_vehicle(vehicle_id).await?;
+                    let vehicle_info = api
+                        .get_started_scenario(scenario_id)
+                        .await?
+                        .vehicles
+                        .into_iter()
+                        .find(|v| v.id == vehicle_id)
+                        .ok_or_else(|| anyhow!("Vehicle not found"))?;
                     let status = get_vehicle_status(&vehicle_info);
+
+                    log::debug!("Vehicle {} status: {:?}", vehicle_id, status);
 
                     if let SimpleVehicleStatus::Idle = status {
                         break;
@@ -88,7 +99,13 @@ impl<'a> ScenarioManager<'a> {
                             .remaining_travel_time
                             .ok_or_else(|| anyhow!("Mispredicted vehicle status"))?;
 
-                        let remaining_time = Duration::from_secs_f64(remaining_time_f64);
+                        let remaining_time = Duration::from_secs_f64(remaining_time_f64 * speed);
+
+                        log::debug!(
+                            "Vehicle {} is busy, waiting for {}s",
+                            vehicle_id,
+                            remaining_time.as_secs_f64()
+                        );
 
                         tokio::time::sleep(remaining_time).await;
                     }
