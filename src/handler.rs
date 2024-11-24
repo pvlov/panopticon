@@ -32,7 +32,7 @@ async fn run_scenario(
 
     let scenario = ctx
         .api_wrapper
-        .get_scenario(scenario_id)
+        .get_init_scenario(scenario_id)
         .await
         .map_err(ErrorInternalServerError)?;
 
@@ -62,8 +62,8 @@ async fn list_scenarios(ctx: web::Data<AppContext>) -> Result<impl Responder> {
     serde_json::to_string(&scenarios).map_err(ErrorInternalServerError)
 }
 
-#[get("/api/get_scenario/{id}")]
-async fn get_scenario(
+#[get("/api/get_init_scenario/{id}")]
+async fn get_init_scenario(
     req_params: web::Path<Uuid>,
     ctx: web::Data<AppContext>,
 ) -> Result<impl Responder> {
@@ -72,11 +72,32 @@ async fn get_scenario(
 
     let scenario = ctx
         .api_wrapper
-        .get_scenario(id)
+        .get_init_scenario(id)
         .await
         .map_err(ErrorInternalServerError)?;
 
-    serde_json::to_string(&scenario).map_err(ErrorInternalServerError)
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body(serde_json::to_string(&scenario).map_err(ErrorInternalServerError)?))
+}
+
+#[get("/api/get_started_scenario/{id}")]
+async fn get_started_scenario(
+    req_params: web::Path<Uuid>,
+    ctx: web::Data<AppContext>,
+) -> Result<impl Responder> {
+    let id = req_params.into_inner();
+    let ctx = ctx.into_inner();
+
+    let scenario_dto = ctx
+        .api_wrapper
+        .get_started_scenario_str(id)
+        .await
+        .map_err(ErrorInternalServerError)?;
+
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body(scenario_dto))
 }
 
 impl<'a> TryFrom<ScenarioDto> for Scenario<'a> {

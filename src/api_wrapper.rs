@@ -44,7 +44,7 @@ impl ApiWrapper {
         Ok(serde_json::from_str(&body)?)
     }
 
-    async fn get_scenario_str(&self, id: Uuid) -> Result<String, anyhow::Error> {
+    async fn get_init_scenario_str(&self, id: Uuid) -> Result<String, anyhow::Error> {
         log::trace!("Getting scenario {} from scenario manager", id);
         let scenario_url = self
             .scenario_manager_url
@@ -55,17 +55,57 @@ impl ApiWrapper {
             .header("accept", "application/json")
             .send()
             .await?;
+
+        if res.status().is_server_error() || res.status().is_client_error() {
+            return Err(anyhow::anyhow!(
+                "Failed to get init scenario: {}",
+                res.text().await?
+            ));
+        }
+
         let body = res.text().await?;
         log::trace!("Got scenario {} response: {}", id, body);
         Ok(body)
     }
 
-    pub async fn get_scenario(&self, id: Uuid) -> Result<ScenarioDto, anyhow::Error> {
+    pub async fn get_init_scenario(&self, id: Uuid) -> Result<ScenarioDto, anyhow::Error> {
         // curl -X 'GET' \
         //   'http://localhost:8080/scenarios/748e736f-0ff1-4868-9df3-795b130eb4a7' \
         //   -H 'accept: application/json'
 
-        let body = self.get_scenario_str(id).await?;
+        let body = self.get_init_scenario_str(id).await?;
+
+        Ok(serde_json::from_str(&body)?)
+    }
+
+    pub async fn get_started_scenario_str(&self, id: Uuid) -> Result<String, anyhow::Error> {
+        // /Scenarios/get_scenario/{scenario_id}
+
+        log::trace!("Getting started scenario {}", id);
+        let scenario_url = self
+            .scenario_runner_url
+            .with_path(&format!("/Scenarios/get_scenario/{}", id));
+        let res = self
+            .client
+            .get(scenario_url)
+            .header("accept", "application/json")
+            .send()
+            .await?;
+
+        if res.status().is_server_error() || res.status().is_client_error() {
+            return Err(anyhow::anyhow!(
+                "Failed to get started scenario: {}",
+                res.text().await?
+            ));
+        }
+
+        let body = res.text().await?;
+        log::trace!("Got started scenario {} response: {}", id, body);
+        Ok(body)
+    }
+
+    pub async fn get_started_scenario(&self, id: Uuid) -> Result<ScenarioDto, anyhow::Error> {
+        let body = self.get_started_scenario_str(id).await?;
 
         Ok(serde_json::from_str(&body)?)
     }
@@ -139,7 +179,7 @@ impl ApiWrapper {
             .scenario_manager_url
             .with_path("/Scenarios/initialize_scenario");
 
-        let init_str = self.get_scenario_str(id).await?;
+        let init_str = self.get_init_scenario_str(id).await?;
 
         let res = self
             .client

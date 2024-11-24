@@ -129,15 +129,15 @@ fn haversine_dist(pos1: Position, pos2: Position) -> f64 {
 
 // the references got too complex and I don't always need all that info
 #[derive(Debug, Clone, Copy)]
-enum SimpleVehicleStatus {
+pub enum SimpleVehicleStatus {
     DrivingToDestination,
     DrivingToCustomer,
     Idle,
 }
 
 // TODO alt: check remaining travel time?
-fn get_vehicle_status(v: &StandardMagentaVehicleDto) -> SimpleVehicleStatus {
-    if let Some(_) = v.customer_id {
+pub fn get_vehicle_status(v: &StandardMagentaVehicleDto) -> SimpleVehicleStatus {
+    if v.customer_id.is_some() {
         SimpleVehicleStatus::DrivingToDestination
     } else if let Some(speed) = v.vehicle_speed {
         if speed > 0.0 {
