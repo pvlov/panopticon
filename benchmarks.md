@@ -15,31 +15,39 @@ Nearest R*-Tree solver took 0.000695298 s for 200 Customers and 5 Vehicles
 # 50 customers and 200 vehicles:
 ## Random:
 Random solver solution wait times stats:
-Min:           0.005353811819635032
-Max:           0.5736426964738128
-Avg:           0.2187309212316408
-Median:        0.204437631372271
+| category | time |
+|----------|------|
+|Min:         |  0.005|
+|Max:         |  0.574|
+|Avg:         |  0.219|
+|Median:      |  0.204|
 
 ## Nearest R*-tree:
 Nearest solver solution wait times stats:
-Min:          0.0005696534033949003
-Max:          0.35324082942132623
-Avg:          0.10572243225889881
-Median:       0.09499414094520311
+| category | time |
+|----------|------|
+|Min:          | 0.001|
+|Max:          | 0.353|
+|Avg:          | 0.106|
+|Median:       | 0.095|
 
 
 # 5 and 20:
 ## Random:
 Random solver solution wait times stats:
-Min:           0.03886547204138772
-Max:           0.5351065377967398
-Avg:           0.26110036793573
-Median:        0.2797586225306581
+| category | time |
+|----------|------|
+|Min:      |     0.0389|
+|Max:       |    0.535|
+|Avg:        |   0.261|
+|Median:      |  0.280|
 
 ## Nearest R*-Tree:
 Nearest solver solution wait times stats:
-Min:          0.0037995304973134883
-Max:          0.34468643681935196
-Avg:          0.13375184938456036
-Median:       0.10242600468303314
+| category | time |
+|----------|------|
+|Min:        |  0.003|
+|Max:         | 0.345|
+|Avg:         | 0.134|
+|Median:      | 0.102|
 
